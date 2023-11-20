@@ -1,5 +1,4 @@
-# keyboardEmu
-Emulating keyboard events
+# Emulating keyboard events
 
 > in this version the application simply presses F5 every 5 seconds
 
