@@ -72,7 +72,7 @@ func try(err error, counter *int, tries int) {
 func trayOnReady(mEnableStatus *bool) {
 	systray.SetTemplateIcon(icon.Data, icon.Data)
 	systray.SetTitle("keyboardEmu")
-	systray.SetTooltip("Emulate keyboard events")
+	systray.SetTooltip("Emulating keyboard events")
 
 	mEnable := systray.AddMenuItemCheckbox("Enable", "Enable App", true)
 	//mEnableStatus := true
