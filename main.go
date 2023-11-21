@@ -1,17 +1,38 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/getlantern/systray"
 	"github.com/micmonay/keybd_event"
 	"keyboardEmu/icon"
 	"log"
+	"os"
 	"time"
 )
 
+type configuration struct {
+	EnableOnStartup bool          `json:"enableOnStartup"`
+	Duration        time.Duration `json:"duration"`
+	//Keys            []string      `json:"keys"`
+}
+
+var conf configuration
+
+func init() {
+	configFile, err := os.ReadFile("config.json")
+	if err != nil {
+		log.Fatal("can't open the file: ", err)
+	}
+
+	if err = json.Unmarshal(configFile, &conf); err != nil {
+		log.Fatal("can't unmarshal file: ", err)
+	}
+}
+
 func main() {
 	ch := make(chan bool)
-	isActive := true
-	var delay time.Duration = 5
+	isActive := conf.EnableOnStartup
+	delay := conf.Duration
 
 	go keyboardEvent(ch)
 
@@ -70,15 +91,14 @@ func try(err error, counter *int, tries int) {
 	log.Printf("err %d/%d: %v", counter, tries, err)
 }
 
-func trayOnReady(mEnableStatus *bool) {
+func trayOnReady(isActive *bool) {
 	systray.SetTemplateIcon(icon.Data, icon.Data)
 	systray.SetTitle("keyboardEmu")
 	systray.SetTooltip("Emulating keyboard events")
 
-	mEnable := systray.AddMenuItemCheckbox("Enable", "Enable App", true)
-	//mEnableStatus := true
+	mEnable := systray.AddMenuItemCheckbox("Enable", "Enable Refresh", *isActive)
 	systray.AddSeparator()
-	mQuitOrig := systray.AddMenuItem("Quit", "Quit the whole app")
+	mQuitOrig := systray.AddMenuItem("Quit", "Quit the app")
 
 	go func() {
 		for {
@@ -88,11 +108,11 @@ func trayOnReady(mEnableStatus *bool) {
 				systray.Quit()
 				log.Println("Finished quitting")
 			case <-mEnable.ClickedCh:
-				if *mEnableStatus {
-					*mEnableStatus = false
+				if *isActive {
+					*isActive = false
 					mEnable.Uncheck()
 				} else {
-					*mEnableStatus = true
+					*isActive = true
 					mEnable.Check()
 				}
 			}
