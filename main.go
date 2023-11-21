@@ -1,25 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"github.com/getlantern/systray"
 	"github.com/micmonay/keybd_event"
 	"keyboardEmu/icon"
 	"log"
-	"runtime"
 	"time"
 )
 
 func main() {
 	ch := make(chan bool)
 	isActive := true
+	var delay time.Duration = 5
 
 	go keyboardEvent(ch)
 
 	go func() {
 		for {
 			ch <- isActive
-			time.Sleep(5 * time.Second)
+			time.Sleep(delay * time.Second)
 			log.Println("send to chan <- ", isActive)
 		}
 	}()
@@ -38,15 +37,17 @@ func keyboardEvent(ch <-chan bool) {
 	}
 
 	// For linux, it is very important to wait 2 seconds
-	if runtime.GOOS == "linux" {
-		time.Sleep(2 * time.Second)
-	}
+	//if runtime.GOOS == "linux" {
+	time.Sleep(2 * time.Second)
+	//}
 
 	// Select keys to be pressed
 	kb.SetKeys(keybd_event.VK_F5)
 
-	// Set shift to be pressed
+	// Set a modifiers to be pressed
 	kb.HasSHIFT(false)
+	kb.HasALT(false)
+	kb.HasCTRL(false)
 
 	for v := range ch {
 		if v {
@@ -83,9 +84,9 @@ func trayOnReady(mEnableStatus *bool) {
 		for {
 			select {
 			case <-mQuitOrig.ClickedCh:
-				fmt.Println("Requesting quit")
+				log.Println("Requesting quit")
 				systray.Quit()
-				fmt.Println("Finished quitting")
+				log.Println("Finished quitting")
 			case <-mEnable.ClickedCh:
 				if *mEnableStatus {
 					*mEnableStatus = false
