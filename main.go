@@ -12,8 +12,10 @@ import (
 
 type configuration struct {
 	EnableOnStartup bool          `json:"enableOnStartup"`
-	Duration        time.Duration `json:"duration"`
-	//Keys            []string      `json:"keys"`
+	Delay           time.Duration `json:"delay"`
+	Alt             bool          `json:"alt"`
+	Ctrl            bool          `json:"ctrl"`
+	Shift           bool          `json:"shift"`
 }
 
 var conf configuration
@@ -32,7 +34,7 @@ func init() {
 func main() {
 	ch := make(chan bool)
 	isActive := conf.EnableOnStartup
-	delay := conf.Duration
+	delay := conf.Delay
 
 	//launching routine to pressing keys
 	go keyboardEvent(ch)

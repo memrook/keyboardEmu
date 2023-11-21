@@ -1,4 +1,7 @@
 {
   "enableOnStartup": false,
-  "duration": 10
+  "delay": 10,
+  "alt": false,
+  "ctrl": false,
+  "shift": false
 }
