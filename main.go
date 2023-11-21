@@ -34,8 +34,10 @@ func main() {
 	isActive := conf.EnableOnStartup
 	delay := conf.Duration
 
+	//launching routine to pressing keys
 	go keyboardEvent(ch)
 
+	//routine for sending status at runtime
 	go func() {
 		for {
 			ch <- isActive
@@ -44,6 +46,7 @@ func main() {
 		}
 	}()
 
+	//setup tray icon
 	trayOnExit := func() {
 		log.Println("called trayOnExit")
 	}
